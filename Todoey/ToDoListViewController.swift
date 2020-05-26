@@ -12,11 +12,18 @@ class ToDoListViewController: UITableViewController {
 
     var itemArray = ["Find Mike","Buy Eggos","Defeat Demogorgan"]
     
+    let defaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        
+        //Check whether user's default list is populated and if it is then use it to launch app
+        if let items = defaults.array(forKey: "ToDoListArray") as? [String] {
+            
+            itemArray = items
+            
+        }
         
     }
 
@@ -78,6 +85,9 @@ class ToDoListViewController: UITableViewController {
             
             //What will happen once the user clicks the Add Item button on our UI Alert
             self.itemArray.append(textField.text!)
+            
+            //Save new array to User Defaults
+            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
             
             //Reload table view to show new item
             self.tableView.reloadData()
