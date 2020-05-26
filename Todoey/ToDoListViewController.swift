@@ -10,8 +10,7 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
 
-    let itemArray = ["Find Mike","Buy Eggos","Defeat Demogorgan"]
-    
+    var itemArray = ["Find Mike","Buy Eggos","Defeat Demogorgan"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,7 +63,39 @@ class ToDoListViewController: UITableViewController {
         //Changing selection to flash grey rather than stay grey
         tableView.deselectRow(at: indexPath, animated: true)
         
-        
     }
+    
+    //MARK: - Add New Items
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+    
+        //Need to create a variable that can be used within all scopes i.e. within the alert closure below.
+        var textField: UITextField = UITextField()
+        
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            
+            //What will happen once the user clicks the Add Item button on our UI Alert
+            self.itemArray.append(textField.text!)
+            
+            //Reload table view to show new item
+            self.tableView.reloadData()
+            
+        }
+        
+        //Adding text field to alert
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create new item"
+            //alertTextField doesn't exist outside of this scope so need to attach it to the more "global" variable. This is called "extending the scope"
+            textField = alertTextField
+        }
+        
+        //Presenting alert to user after pressing add item button
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    
+    }
+    
     
 }
