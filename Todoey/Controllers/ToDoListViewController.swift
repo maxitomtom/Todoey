@@ -1,30 +1,32 @@
-//
-//  ToDoListViewController.swift
-//  Todoey
-//
-//  Created by Max on 24/05/2020.
-//  Copyright © 2020 Max Thomas. All rights reserved.
-//
-
 import UIKit
 
 class ToDoListViewController: UITableViewController {
-
-    var itemArray = ["Find Mike","Buy Eggos","Defeat Demogorgan"]
+    
+    var itemArray = [Item]()
     
     let defaults = UserDefaults.standard
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        let newItem1 = Item()
+        newItem1.title = "Find Mike"
+        itemArray.append(newItem1)
+        
+        let newItem2 = Item()
+        newItem2.title = "Buy Eggos"
+        itemArray.append(newItem2)
+    
+        let newItem3 = Item()
+        newItem3.title = "Destrol Demogorgon"
+        itemArray.append(newItem3)
         
         //Check whether user's default list is populated and if it is then use it to launch app
-        if let items = defaults.array(forKey: "ToDoListArray") as? [String] {
+        if let items = defaults.array(forKey: "ToDoListArray") as? [Item] {
             
             itemArray = items
             
         }
-        
     }
 
     //MARK: - Tableview Datasource Methods
@@ -40,8 +42,19 @@ class ToDoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let item = itemArray[indexPath.row]
         
-        cell.textLabel?.text = itemArray[indexPath.row]
+        cell.textLabel?.text = item.title
+        
+        //Ternary operator replaces the 5 lines of if else below
+        cell.accessoryType = item.done ? .checkmark : .none
+        
+//        if item.done == true {
+//            cell.accessoryType = .checkmark
+//        }
+//        else {
+//            cell.accessoryType = .none
+//        }
         
         return cell
         
@@ -52,21 +65,20 @@ class ToDoListViewController: UITableViewController {
     //Fires whenever we click on any cell in the table view
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        print(itemArray[indexPath.row])
+        //print(itemArray[indexPath.row])
         
-        //Remove checkmark if the cell already has one
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-            
-        }
-        else {
-            
-            //Adding checkmark to selection
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-            
-        }
+        //Sets done property to be opposite of current propert.
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        
+        //Line above replaces these 5 lines of code:
+//        if itemArray[indexPath.row].done == true {
+//            itemArray[indexPath.row].done = false
+//        }
+//        else {
+//            itemArray[indexPath.row].done = true
+//        }
 
+        tableView.reloadData()
         //Changing selection to flash grey rather than stay grey
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -84,7 +96,9 @@ class ToDoListViewController: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
             //What will happen once the user clicks the Add Item button on our UI Alert
-            self.itemArray.append(textField.text!)
+            let newItem = Item()
+            newItem.title = textField.text!
+            self.itemArray.append(newItem)
             
             //Save new array to User Defaults
             self.defaults.set(self.itemArray, forKey: "ToDoListArray")
